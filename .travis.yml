@@ -1,0 +1,15 @@
+language: python
+sudo: required
+services:
+- docker
+env:
+  matrix:
+  - TAG=cpu
+  - TAG=gpu
+install:
+- export REPO="haowenxu/python3-ml"
+- pip install -r requirements.txt && python Dockerfile.py
+- docker build -t "${REPO}:${TAG}" "${TAG}"
+script:
+- docker login -u "${DOCKER_USER}" -p "${DOCKER_PASS}"
+- docker push "${REPO}:${TAG}"
