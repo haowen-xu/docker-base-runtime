@@ -11,25 +11,17 @@ Major Packages
 
 * Python 3.6
 * R Language
-* OpenJDK 11
+* OpenJDK 9
 * CUDA 9.0 + CUDNN 7 (for GPU variant)
-    
-Development
------------
 
-We have two variants of Dockerfiles, the CPU variant (without CUDA) and the GPU variant (with CUDA).
-To populate the Dockerfiles of both variants, execute the following command::
-
-    pip install jinja2
-    python Dockerfile.py
-
-Installation
-------------
+Build Docker Image
+------------------
 
 ::
+    pip install -r requirements.txt
 
     # build the cpu image
-    docker build -t ipwx/base-runtime:gpu cpu
+    python configure.py --variant=cpu && docker build -t ipwx/base-runtime:cpu .
 
     # build the gpu image
-    docker build -t ipwx/python3-ml:gpu gpu
+    python configure.py --variant=gpu && docker build -t ipwx/base-runtime:gpu .

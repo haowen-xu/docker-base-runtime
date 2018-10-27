@@ -9,6 +9,8 @@ ENV PIP_DEFAULT_TIMEOUT=120
 ENV SHELL=/bin/bash
 
 
+ENV RUNTIME_VARIANT="cpu"
+
 
 # do configuration and update packages
 RUN chsh -s /bin/bash && \
@@ -23,11 +25,14 @@ RUN chsh -s /bin/bash && \
         libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev \
         libnlopt-dev libpq-dev libffi-dev libcairo-dev libedit-dev \
     && \
-    add-apt-repository "deb ${CRAN_MIRROR}/bin/linux/ubuntu $(lsb_release -c -s)/" && \
+    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -c -s)/" && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-overwrite" \
+        install -y --no-install-recommends openjdk-9-jdk \
+    && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        r-base r-base-dev \
+        r-base r-base-dev maven \
     && \
     wget -O /tmp/Python-${PYTHON_VERSION}.tgz https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz  && \
         cd /tmp && tar -xzvf Python-${PYTHON_VERSION}.tgz && \
@@ -44,16 +49,9 @@ RUN chsh -s /bin/bash && \
 
 RUN python --version && \
     python -m pip --version && \
-    python -m pip install ${PIP_OPTS} --no-cache-dir --upgrade setuptools pip six && \
-    python -m pip install ${PIP_OPTS} --no-cache-dir rpy2 && \
+    python -m pip install --no-cache-dir --upgrade setuptools pip six && \
+    python -m pip install --no-cache-dir rpy2 && \
     rm -rf /root/.cache
-
-# Install Jupyterlab and other Jupyter extensions
-ARG JUPYTER_BUILD_VERSION=1
-RUN pip install ${PIP_OPTS} jupyterlab jupyter_nbextensions_configurator jupyter_contrib_nbextensions && \
-    jupyter contrib nbextension install --sys-prefix && \
-    jupyter nbextensions_configurator enable --sys-prefix && \
-    jupyter serverextension enable --py jupyterlab --sys-prefix
 
 # Install the entry script
 ADD entry.sh /entry.sh
