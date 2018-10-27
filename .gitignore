@@ -1,3 +1,4 @@
 /.ropeproject
+/Dockerfile
 *.pyc
 .DS_Store
