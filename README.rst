@@ -9,19 +9,36 @@ This is a Ubuntu 16.04 Docker image with various runtime.
 Major Packages
 --------------
 
-* Python 3.6
-* R Language
-* OpenJDK 9
-* CUDA 9.0 + CUDNN 7 (for GPU variant)
+* Variants:
+  * CPU variant: based on official Ubuntu 16.04 image
+  * GPU variant: based on Nvidia Ubuntu 16.04 image, with CUDA and CUDNN
+* Installed packages:
+  * Mesos
+  * Python
+  * R Language
+  * OpenJDK
 
-Build Docker Image
-------------------
+Generate the Dockerfile
+-----------------------
 
-::
+We use `configure.py` to generate the Dockerfile according to configurations.
+
+You should first install the dependencies of `configure.py`::
+
     pip install -r requirements.txt
 
-    # build the cpu image
-    python configure.py --variant=cpu && docker build -t ipwx/base-runtime:cpu .
+Then for example, you can use the following statement to generate the CPU
+variant Dockerfile::
 
-    # build the gpu image
-    python configure.py --variant=gpu && docker build -t ipwx/base-runtime:gpu .
+    python configure.py \
+        -c config/cpu.yml \
+        -c config/mesos1.7.yml \
+        -c config/python3.6.yml \
+        -c config/openjdk9.yml
+
+Build the Docker Image
+----------------------
+
+After generate the Dockerfile, you can build the docker image by::
+
+    docker build --build-arg MAKE_ARGS=-j4 .

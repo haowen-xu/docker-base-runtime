@@ -1,61 +1,83 @@
-FROM {% if gpu %}nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04{% else %}ubuntu:16.04{% endif %}
+FROM {{ config.base_image }}
 
 MAINTAINER Haowen Xu <haowen.xu@outlook.com>
 
-ARG PYTHON_VERSION=3.6.6
+ARG MAKE_ARGS=-j4
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
-ENV PIP_DEFAULT_TIMEOUT=120
 ENV SHELL=/bin/bash
+ENV RUNTIME_VARIANT={{ config.variant }}
 
-{% if gpu %}
-ENV RUNTIME_VARIANT="gpu"
+{% if config.variant == "gpu" %}
 ENV LD_LIBRARY_PATH="/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/local/cuda/lib64:/usr/local/cuda/lib:${LD_LIBRARY_PATH}"
   # lock the versions of cuda and libcudnn, such that TensorFlow + cudnn can work properly
 RUN apt-get -y update && apt-mark hold cuda* libcudnn*
-{% else %}
-ENV RUNTIME_VARIANT="cpu"
 {% endif %}
 
-# do configuration and update packages
+# Basic configuration of the system, and build dependencies
 RUN chsh -s /bin/bash && \
-    mkdir -p /var/run/sshd && \
     DEBIAN_FRONTEND=noninteractive apt-get -y update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        apt-utils apt-transport-https lsb-release openssl gnupg dirmngr software-properties-common \
-        build-essential ca-certificates wget git mercurial \
-        locales language-pack-en tzdata vim ssh \
+        locales language-pack-en tzdata ca-certificates lsb-release iputils-ping \
+        apt-utils apt-transport-https gnupg dirmngr openssl software-properties-common  \
+        tar wget git mercurial vim build-essential autoconf libtool \
         libssl-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev \
         libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev \
         libnlopt-dev libpq-dev libffi-dev libcairo-dev libedit-dev \
+        libcurl4-nss-dev libsasl2-dev libsasl2-modules libapr1-dev libsvn-dev \
     && \
-    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -c -s)/" && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
-    DEBIAN_FRONTEND=noninteractive apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-overwrite" \
-        install -y --no-install-recommends openjdk-9-jdk \
-    && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        r-base r-base-dev maven \
-    && \
-    wget -O /tmp/Python-${PYTHON_VERSION}.tgz https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz  && \
-        cd /tmp && tar -xzvf Python-${PYTHON_VERSION}.tgz && \
-        cd Python-${PYTHON_VERSION} && \
-        ./configure --enable-optimizations && \
-        make -j8 && \
-        make altinstall && \
-        rm /tmp/Python-${PYTHON_VERSION}.tgz && \
-        rm -rf /tmp/Python-${PYTHON_VERSION} && \
-    ln -sf /usr/local/bin/python3.6 /usr/bin/python && \
-    ln -sf /usr/local/bin/pip3.6 /usr/bin/pip && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Build and install Python
+RUN wget -O /tmp/Python-{{ config.python_version }}.tgz https://www.python.org/ftp/python/{{ config.python_version }}/Python-{{ config.python_version }}.tgz && \
+        cd /tmp && tar -xzf Python-{{ config.python_version }}.tgz && \
+        cd Python-{{ config.python_version }} && \
+        ./configure --enable-optimizations > /dev/null && \
+        make ${MAKE_ARGS} && \
+        make altinstall && \
+        rm /tmp/Python-{{ config.python_version }}.tgz && \
+        rm -rf /tmp/Python-{{ config.python_version }} && \
+    ln -sf /usr/local/bin/python3.6 /usr/bin/python && \
+    ln -sf /usr/local/bin/pip3.6 /usr/bin/pip
 RUN python --version && \
     python -m pip --version && \
-    python -m pip install --no-cache-dir --upgrade setuptools pip six && \
-    python -m pip install --no-cache-dir rpy2 && \
+    python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv && \
+    rm -rf /root/.cache
+
+# Install OpenJDK
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-overwrite" install -y --no-install-recommends \
+        {{ config.jdk_package }} \
+    && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        maven \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Build and install mesos
+RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/dist/mesos/1.7.0/mesos-{{ config.mesos_version }}.tar.gz && \
+        cd /tmp && tar -xzf mesos-{{ config.mesos_version }}.tar.gz && \
+        cd mesos-{{ config.mesos_version }} && \
+        mkdir build && cd build && ../configure && \
+        make ${MAKE_ARGS} && \
+        make check && \
+        make install && \
+        rm /tmp/mesos-{{ config.mesos_version }}.tgz && \
+        rm -rf /tmp/mesos-{{ config.mesos_version }}
+
+# Install R Language
+RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -c -s)/" && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
+    DEBIAN_FRONTEND=noninteractive apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        r-base r-base-dev \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    python -m pip install --no-cache-dir --upgrade rpy2 && \
     rm -rf /root/.cache
 
 # Install the entry script

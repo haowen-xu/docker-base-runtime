@@ -1,0 +1,2 @@
+base_image: ubuntu:16.04
+variant: cpu
