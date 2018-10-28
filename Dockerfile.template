@@ -50,7 +50,7 @@ RUN wget -O /tmp/Python-{{ config.python_version }}.tgz https://www.python.org/f
     ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip3
 RUN python --version && \
     python -m pip --version && \
-    python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv rpy2 && \
+    python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv && \
     rm -rf /root/.cache
 
 # Install OpenJDK
@@ -84,6 +84,10 @@ RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_r
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN python --version && \
+    python -m pip --version && \
+    python -m pip install --no-cache-dir --upgrade rpy2 && \
+    rm -rf /root/.cache
 
 # Install the entry script
 COPY entry.sh /
