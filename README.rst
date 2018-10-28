@@ -1,9 +1,6 @@
 Base Runtime
 ============
 
-.. image:: https://travis-ci.org/haowen-xu/docker-base-runtime.svg?branch=master
-    :target: https://travis-ci.org/haowen-xu/docker-base-runtime
-
 This is a Ubuntu Docker image with various runtime.
 
 Major Packages
