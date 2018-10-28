@@ -1,17 +1,19 @@
 Base Runtime
 ============
 
-.. image:: https://travis-ci.org/haowen-xu/base-runtime.svg?branch=master
-    :target: https://travis-ci.org/haowen-xu/base-runtime
+.. image:: https://travis-ci.org/haowen-xu/docker-base-runtime.svg?branch=master
+    :target: https://travis-ci.org/haowen-xu/docker-base-runtime
 
-This is a Ubuntu 16.04 Docker image with various runtime.
+This is a Ubuntu Docker image with various runtime.
 
 Major Packages
 --------------
 
+All the variants can be retrieved at `Docker Hub <https://hub.docker.com/r/haowenxu/base-runtime>`_.
+
 * Variants:
-   * CPU variant: based on official Ubuntu 16.04 image
-   * GPU variant: based on Nvidia Ubuntu 16.04 image, with CUDA and CUDNN
+   * CPU variant: based on official Ubuntu image
+   * GPU variant: based on Nvidia Ubuntu image, with CUDA and CUDNN
 * Installed packages:
    * Mesos
    * Python
@@ -34,7 +36,7 @@ variant Dockerfile::
         -c config/cpu.yml \
         -c config/mesos1.7.yml \
         -c config/python3.6.yml \
-        -c config/openjdk9.yml
+        -c config/openjdk8.yml
 
 Build the Docker Image
 ----------------------
