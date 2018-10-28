@@ -10,13 +10,13 @@ Major Packages
 --------------
 
 * Variants:
-  * CPU variant: based on official Ubuntu 16.04 image
-  * GPU variant: based on Nvidia Ubuntu 16.04 image, with CUDA and CUDNN
+   * CPU variant: based on official Ubuntu 16.04 image
+   * GPU variant: based on Nvidia Ubuntu 16.04 image, with CUDA and CUDNN
 * Installed packages:
-  * Mesos
-  * Python
-  * R Language
-  * OpenJDK
+   * Mesos
+   * Python
+   * R Language
+   * OpenJDK
 
 Generate the Dockerfile
 -----------------------
