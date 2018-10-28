@@ -71,7 +71,6 @@ RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/d
         ../configure --enable-optimize && \
         make ${MAKE_ARGS} && \
         make check && \
-        make install && \
         rm /tmp/mesos-{{ config.mesos_version }}.tgz && \
         rm -rf /tmp/mesos-{{ config.mesos_version }}
 
