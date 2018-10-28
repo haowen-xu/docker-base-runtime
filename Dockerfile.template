@@ -35,6 +35,24 @@ RUN chsh -s /bin/bash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Build and install Python
+RUN wget -O /tmp/Python-{{ config.python_version }}.tgz https://www.python.org/ftp/python/{{ config.python_version }}/Python-{{ config.python_version }}.tgz && \
+        cd /tmp && tar -xzf Python-{{ config.python_version }}.tgz && \
+        cd Python-{{ config.python_version }} && \
+        ./configure --enable-optimizations > /dev/null && \
+        make ${MAKE_ARGS} && \
+        make altinstall && \
+        rm /tmp/Python-{{ config.python_version }}.tgz && \
+        rm -rf /tmp/Python-{{ config.python_version }} && \
+    ln -sf /usr/local/bin/python3.6 /usr/local/bin/python && \
+    ln -sf /usr/local/bin/python3.6 /usr/local/bin/python3 && \
+    ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip && \
+    ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip3
+RUN python --version && \
+    python -m pip --version && \
+    python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv rpy2 && \
+    rm -rf /root/.cache
+
 # Install OpenJDK
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-overwrite" install -y --no-install-recommends \
@@ -66,24 +84,6 @@ RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_r
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# Build and install Python
-RUN wget -O /tmp/Python-{{ config.python_version }}.tgz https://www.python.org/ftp/python/{{ config.python_version }}/Python-{{ config.python_version }}.tgz && \
-        cd /tmp && tar -xzf Python-{{ config.python_version }}.tgz && \
-        cd Python-{{ config.python_version }} && \
-        ./configure --enable-optimizations > /dev/null && \
-        make ${MAKE_ARGS} && \
-        make altinstall && \
-        rm /tmp/Python-{{ config.python_version }}.tgz && \
-        rm -rf /tmp/Python-{{ config.python_version }} && \
-    ln -sf /usr/local/bin/python3.6 /usr/local/bin/python && \
-    ln -sf /usr/local/bin/python3.6 /usr/local/bin/python3 && \
-    ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip && \
-    ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip3
-RUN python --version && \
-    python -m pip --version && \
-    python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv rpy2 && \
-    rm -rf /root/.cache
 
 # Install the entry script
 COPY entry.sh /
