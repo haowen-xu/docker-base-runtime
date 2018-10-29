@@ -21,7 +21,7 @@ except ImportError:
               help='Repository of the docker image. '
                    '(e.g., "haowenxu/base-runtime")')
 @click.option('--make-args', type=str, required=False, help='Make args.')
-@click.option('--push', is_flag=True, required=False, default=True,
+@click.option('--push', is_flag=True, required=False, default=False,
               help='Push the image to DockerHub.')
 @click.option('--push-to', multiple=True, type=str, required=False,
               help='Push the image to a customized docker registry.')
