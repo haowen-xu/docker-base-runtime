@@ -37,6 +37,7 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
         variant,
         '{}-mesos{}-python{}-{}'.format(variant, mesos, python, java)
     ]
+    image_names = ['{}:{}'.format(repo, tag) for tag in tags]
 
     with TemporaryDirectory() as tmpdir:
         pwd = os.path.abspath(os.getcwd())
@@ -57,7 +58,7 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
         # build the docker
         args = docker + [
             'build',
-            '-t', '{}:{}'.format(repo, tags[-1])
+            '-t', image_names[-1]
         ]
         if make_args:
             args.extend(['--build-arg', 'MAKE_ARGS={}'.format(make_args)])
@@ -66,13 +67,16 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
 
     # tag and push the docker images
     if push:
-        subprocess.check_call(docker + ['push', '{}:{}'.format(repo, tags[-1])])
-        for tag in tags[-1]:
-            subprocess.check_call(docker + ['push', '{}:{}'.format(repo, tag)])
+        subprocess.check_call(docker + ['push', image_names[-1]])
+        for image_name in image_names[:-1]:
+            subprocess.check_call(docker + ['tag', image_names[-1], image_name])
+            subprocess.check_call(docker + ['push', image_name])
     for registry in push_to:
-        for tag in tags:
+        for image_name in image_names:
+            remote_image_name = '{}/{}'.format(registry, image_name)
             subprocess.check_call(
-                docker + ['push', '{}/{}:{}'.format(registry, repo, tag)])
+                docker + ['tag', image_names[-1], remote_image_name])
+            subprocess.check_call(docker + ['push', remote_image_name])
 
 if __name__ == '__main__':
     main()
