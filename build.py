@@ -32,7 +32,12 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
     if variant not in ('cpu', 'gpu'):
         click.echo('Invalid variant {}'.format(variant), err=True)
         sys.exit(-1)
-    docker = ['sudo', 'docker'] if sudo else ['docker']
+
+    def docker_call(args, **kwargs):
+        args = (['sudo', 'docker'] if sudo else ['docker']) + args
+        print('$ {}'.format(' '.join(args)))
+        subprocess.check_call(args, **kwargs)
+
     tags = [
         variant,
         '{}-mesos{}-python{}-{}'.format(variant, mesos, python, java)
@@ -56,27 +61,26 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
         subprocess.check_call(args, cwd=work_dir)
         
         # build the docker
-        args = docker + [
+        args = [
             'build',
             '-t', image_names[-1]
         ]
         if make_args:
             args.extend(['--build-arg', 'MAKE_ARGS={}'.format(make_args)])
         args.append('.')
-        subprocess.check_call(args, cwd=work_dir)
+        docker_call(args, cwd=work_dir)
 
     # tag and push the docker images
     if push:
-        subprocess.check_call(docker + ['push', image_names[-1]])
+        docker_call(['push', image_names[-1]])
         for image_name in image_names[:-1]:
-            subprocess.check_call(docker + ['tag', image_names[-1], image_name])
-            subprocess.check_call(docker + ['push', image_name])
+            docker_call(['tag', image_names[-1], image_name])
+            docker_call(['push', image_name])
     for registry in push_to:
         for image_name in image_names:
             remote_image_name = '{}/{}'.format(registry, image_name)
-            subprocess.check_call(
-                docker + ['tag', image_names[-1], remote_image_name])
-            subprocess.check_call(docker + ['push', remote_image_name])
+            docker_call(['tag', image_names[-1], remote_image_name])
+            docker_call(['push', remote_image_name])
 
 if __name__ == '__main__':
     main()
