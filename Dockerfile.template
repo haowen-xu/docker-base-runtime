@@ -7,10 +7,6 @@ ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV SHELL=/bin/bash
 ENV RUNTIME_VARIANT={{ config.variant }}
-ENV JAVA_HOME="{{ config.java_home }}"
-ENV PATH="{{ config.java_home }}/bin:/usr/local/bin:${PATH}"
-ENV PYTHON=/usr/bin/python2.7
-ENV PYTHON_3=/usr/local/bin/python3.6
 
 {% if config.variant == "gpu" %}
 ENV LD_LIBRARY_PATH="/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/local/cuda/lib64:/usr/local/cuda/lib:${LD_LIBRARY_PATH}"
@@ -52,6 +48,8 @@ RUN python --version && \
     python -m pip --version && \
     python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv && \
     rm -rf /root/.cache
+ENV PYTHON=/usr/bin/python2.7
+ENV PYTHON_3=/usr/local/bin/python3.6
 
 # Install OpenJDK
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -63,6 +61,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+ENV JAVA_HOME="{{ config.java_home }}"
+ENV PATH="{{ config.java_home }}/bin:/usr/local/bin:${PATH}"
 
 # Build and install mesos
 RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/dist/mesos/1.7.0/mesos-{{ config.mesos_version }}.tar.gz && \
@@ -73,6 +73,7 @@ RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/d
         make install && \
         rm /tmp/mesos-{{ config.mesos_version }}.tgz && \
         rm -rf /tmp/mesos-{{ config.mesos_version }}
+ENV MESOS_NATIVE_JAVA_LIBRARY="{{ config.mesos_native_java_library }}"
 
 # Install R Language
 RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -c -s)/" && \
