@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/usr/bin/env python
 import os
 import shutil
 import subprocess
