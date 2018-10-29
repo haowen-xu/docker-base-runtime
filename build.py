@@ -4,9 +4,13 @@ import os
 import shutil
 import subprocess
 import sys
-from tempfile import TemporaryDirectory
 
 import click
+
+try:
+    from tempfile import TemporaryDirectory
+except ImportError:
+    from backports.tempfile import TemporaryDirectory
 
 
 @click.command()
