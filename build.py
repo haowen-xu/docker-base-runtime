@@ -72,16 +72,21 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
         args.append('.')
         docker_call(args, cwd=work_dir)
 
-    # tag and push the docker images
-    if push:
-        docker_call(['push', image_names[-1]])
-        for image_name in image_names[:-1]:
-            docker_call(['tag', image_names[-1], image_name])
-            docker_call(['push', image_name])
+    # tag the docker images
+    for image_name in image_names[:-1]:
+        docker_call(['tag', image_names[-1], image_name])
     for registry in push_to:
         for image_name in image_names:
             remote_image_name = '{}/{}'.format(registry, image_name)
             docker_call(['tag', image_names[-1], remote_image_name])
+
+    # push the docker images
+    if push:
+        for image_name in image_names:
+            docker_call(['push', image_name])
+    for registry in push_to:
+        for image_name in image_names:
+            remote_image_name = '{}/{}'.format(registry, image_name)
             docker_call(['push', remote_image_name])
 
 if __name__ == '__main__':
