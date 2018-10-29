@@ -12,13 +12,21 @@ All the variants can be retrieved at `Docker Hub <https://hub.docker.com/r/haowe
    * CPU variant: based on official Ubuntu image
    * GPU variant: based on Nvidia Ubuntu image, with CUDA and CUDNN
 * Installed packages:
-   * Mesos
-   * Python
-   * R Language
-   * OpenJDK
+   * Mesos 1.7: `/usr/local/lib/libmesos-1.7.0.so`
+   * Python 2.7: `/usr/bin/python2.7`
+   * Python 3.6: `/usr/local/bin/python3.6`
+   * OpenJDK 8: `/usr/lib/jvm/java-8-openjdk-amd64/bin/java`
+   * R Language: `/usr/bin/R`
+
+Also, `/usr/local/bin/python` is linked to `/usr/local/bin/python3.6`, while
+`/usr/bin/python` is linked to `/usr/bin/python2.7`.  The default Python
+interpreter is thus Python 3.6.
+
+Installation
+------------
 
 Generate the Dockerfile
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 We use `configure.py` to generate the Dockerfile according to configurations.
 
@@ -36,8 +44,20 @@ variant Dockerfile::
         -c config/openjdk8.yml
 
 Build the Docker Image
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 After generate the Dockerfile, you can build the docker image by::
 
     docker build --build-arg MAKE_ARGS=-j4 .
+
+Usage
+-----
+
+The basic usage of this docker image is shown as below.
+Note that you may specify the `TZ` environmental variable, such that the
+container will have the correct timezone::
+
+    docker run \
+        -ti --rm -e TZ=Asia/Shanghai \
+        haowenxu/base-runtime:cpu \
+        /bin/bash
