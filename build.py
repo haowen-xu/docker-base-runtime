@@ -36,6 +36,8 @@ def main(variant, mesos, python, java, repo, make_args, push, push_to, sudo):
     def docker_call(args, **kwargs):
         args = (['sudo', 'docker'] if sudo else ['docker']) + args
         print('$ {}'.format(' '.join(args)))
+        sys.stdout.flush()
+        sys.stderr.flush()
         subprocess.check_call(args, **kwargs)
 
     tags = [
