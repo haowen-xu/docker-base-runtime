@@ -71,7 +71,7 @@ RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/d
         ../configure --enable-optimize && \
         make ${MAKE_ARGS} && \
         make install && \
-        rm /tmp/mesos-{{ config.mesos_version }}.tgz && \
+        rm /tmp/mesos-{{ config.mesos_version }}.tar.gz && \
         rm -rf /tmp/mesos-{{ config.mesos_version }}
 ENV MESOS_NATIVE_JAVA_LIBRARY="{{ config.mesos_native_java_library }}"
 
