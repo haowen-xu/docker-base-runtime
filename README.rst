@@ -15,8 +15,10 @@ All the variants can be retrieved at `Docker Hub <https://hub.docker.com/r/haowe
    * Mesos 1.7: `/usr/local/lib/libmesos-1.7.0.so`
    * Python 2.7: `/usr/bin/python2.7`
    * Python 3.6: `/usr/local/bin/python3.6`
-   * OpenJDK 8: `/usr/lib/jvm/java-8-openjdk-amd64/bin/java`
    * R Language: `/usr/bin/R`
+   * OpenJDK 8: `/usr/lib/jvm/java-8-openjdk-amd64/bin/java`
+   * Scala 2.11: `/usr/bin/scala`
+   * SBT
 
 Also, `/usr/local/bin/python` is linked to `/usr/local/bin/python3.6`, while
 `/usr/bin/python` is linked to `/usr/bin/python2.7`.  The default Python
@@ -41,7 +43,8 @@ variant Dockerfile::
         -c config/cpu.yml \
         -c config/mesos1.7.yml \
         -c config/python3.6.yml \
-        -c config/openjdk8.yml
+        -c config/openjdk8.yml \
+        -c config/scala2.11.yml
 
 Build the Docker Image
 ~~~~~~~~~~~~~~~~~~~~~~
