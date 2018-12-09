@@ -12,7 +12,6 @@ All the variants can be retrieved at `Docker Hub <https://hub.docker.com/r/haowe
    * CPU variant: based on official Ubuntu image
    * GPU variant: based on Nvidia Ubuntu image, with CUDA and CUDNN
 * Installed packages:
-   * Mesos 1.7: `/usr/local/lib/libmesos-1.7.0.so`
    * Python 2.7: `/usr/bin/python2.7`
    * Python 3.6: `/usr/local/bin/python3.6`
    * R Language: `/usr/bin/R`
