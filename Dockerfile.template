@@ -21,7 +21,7 @@ RUN chsh -s /bin/bash && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         locales language-pack-en tzdata ca-certificates lsb-release iputils-ping \
         apt-utils apt-transport-https gnupg dirmngr openssl software-properties-common  \
-        tar wget git mercurial vim build-essential autoconf libtool \
+        tar wget ssh git mercurial vim build-essential autoconf libtool \
         libssl-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev \
         libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev \
         libnlopt-dev libpq-dev libffi-dev libcairo-dev libedit-dev \
@@ -64,16 +64,16 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 ENV JAVA_HOME="{{ config.java_home }}"
 ENV PATH="{{ config.java_home }}/bin:/usr/local/bin:${PATH}"
 
-# Build and install mesos
-RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/dist/mesos/1.7.0/mesos-{{ config.mesos_version }}.tar.gz && \
-        cd /tmp && tar -xzf mesos-{{ config.mesos_version }}.tar.gz && cd mesos-{{ config.mesos_version }} && \
-        mkdir build && cd build && \
-        ../configure --enable-optimize && \
-        make ${MAKE_ARGS} && \
-        make install && \
-        rm /tmp/mesos-{{ config.mesos_version }}.tar.gz && \
-        rm -rf /tmp/mesos-{{ config.mesos_version }}
-ENV MESOS_NATIVE_JAVA_LIBRARY="{{ config.mesos_native_java_library }}"
+## Build and install mesos
+#RUN wget -O /tmp/mesos-{{ config.mesos_version }}.tar.gz http://www.apache.org/dist/mesos/1.7.0/mesos-{{ config.mesos_version }}.tar.gz && \
+#        cd /tmp && tar -xzf mesos-{{ config.mesos_version }}.tar.gz && cd mesos-{{ config.mesos_version }} && \
+#        mkdir build && cd build && \
+#        ../configure --enable-optimize && \
+#        make ${MAKE_ARGS} && \
+#        make install && \
+#        rm /tmp/mesos-{{ config.mesos_version }}.tar.gz && \
+#        rm -rf /tmp/mesos-{{ config.mesos_version }}
+#ENV MESOS_NATIVE_JAVA_LIBRARY="{{ config.mesos_native_java_library }}"
 
 # Install R Language
 RUN add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -c -s)/" && \
