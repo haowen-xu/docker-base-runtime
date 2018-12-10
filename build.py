@@ -13,7 +13,6 @@ except ImportError:
 
 
 @click.command()
-@click.option('--mesos', type=str, default='1.7', required=False)
 @click.option('--python', type=str, default='3.6', required=False)
 @click.option('--java', type=str, default='openjdk8')
 @click.option('--scala', type=str, default='2.11', required=False)
@@ -28,7 +27,7 @@ except ImportError:
 @click.option('--sudo', is_flag=True, required=False, default=False,
               help='Whether or not to use sudo to launch the docker CLI?')
 @click.argument('variant', required=True)
-def main(variant, mesos, python, java, scala,
+def main(variant, python, java, scala,
          repo, make_args, push, push_to, sudo):
     if variant not in ('cpu', 'gpu'):
         click.echo('Invalid variant {}'.format(variant), err=True)
@@ -43,8 +42,8 @@ def main(variant, mesos, python, java, scala,
 
     tags = [
         variant,
-        '{variant}-mesos{mesos}-python{python}-{java}-scala{scala}'.format(
-            variant=variant, mesos=mesos, python=python, java=java, scala=scala)
+        '{variant}-python{python}-{java}-scala{scala}'.format(
+            variant=variant, python=python, java=java, scala=scala)
     ]
     image_names = ['{}:{}'.format(repo, tag) for tag in tags]
 
@@ -58,7 +57,6 @@ def main(variant, mesos, python, java, scala,
             sys.executable,
             'configure.py',
             '-c', 'config/{}.yml'.format(variant),
-            '-c', 'config/mesos{}.yml'.format(mesos),
             '-c', 'config/python{}.yml'.format(python),
             '-c', 'config/{}.yml'.format(java),
             '-c', 'config/scala{}.yml'.format(scala)
