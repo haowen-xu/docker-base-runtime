@@ -21,7 +21,8 @@ RUN chsh -s /bin/bash && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         locales language-pack-en tzdata ca-certificates lsb-release iputils-ping \
         apt-utils apt-transport-https gnupg dirmngr openssl software-properties-common  \
-        tar wget ssh git mercurial vim build-essential autoconf libtool \
+        tar wget ssh git mercurial vim openssh-client psmisc rsync \
+        build-essential autoconf libtool \
         libssl-dev zlib1g-dev libncurses5-dev libncursesw5-dev libreadline-dev libsqlite3-dev \
         libgdbm-dev libdb5.3-dev libbz2-dev libexpat1-dev liblzma-dev tk-dev \
         libnlopt-dev libpq-dev libffi-dev libcairo-dev libedit-dev \
