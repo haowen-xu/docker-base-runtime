@@ -41,16 +41,16 @@ RUN wget -O /tmp/Python-{{ config.python_version }}.tgz https://www.python.org/f
         make altinstall && \
         rm /tmp/Python-{{ config.python_version }}.tgz && \
         rm -rf /tmp/Python-{{ config.python_version }} && \
-    ln -sf /usr/local/bin/python3.6 /usr/local/bin/python && \
-    ln -sf /usr/local/bin/python3.6 /usr/local/bin/python3 && \
-    ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip && \
-    ln -sf /usr/local/bin/pip3.6 /usr/local/bin/pip3
+    ln -sf /usr/local/bin/python{{ python_tag }} /usr/local/bin/python && \
+    ln -sf /usr/local/bin/python{{ python_tag }} /usr/local/bin/python3 && \
+    ln -sf /usr/local/bin/pip{{ python_tag }} /usr/local/bin/pip && \
+    ln -sf /usr/local/bin/pip{{ python_tag }} /usr/local/bin/pip3
 RUN python --version && \
     python -m pip --version && \
     python -m pip install --no-cache-dir --upgrade setuptools pip six virtualenv && \
     rm -rf /root/.cache
-ENV PYTHON=/usr/bin/python2.7
-ENV PYTHON_3=/usr/local/bin/python3.6
+ENV PYTHON_2=/usr/bin/python2.7
+ENV PYTHON_3=/usr/local/bin/python{{ python_tag }}
 
 # Install OpenJDK
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
