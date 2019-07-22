@@ -13,7 +13,7 @@ except ImportError:
 
 
 @click.command()
-@click.option('--python', type=str, default='3.6', required=False)
+@click.option('--python', type=str, default='3.7', required=False)
 @click.option('--java', type=str, default='openjdk8')
 @click.option('--scala', type=str, default='2.11', required=False)
 @click.option('-r', '--repo', type=str, required=True,
