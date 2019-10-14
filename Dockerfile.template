@@ -66,7 +66,7 @@ ENV JAVA_HOME="{{ config.java_home }}"
 ENV PATH="{{ config.java_home }}/bin:/usr/local/bin:${PATH}"
 
 # Install R Language
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 51716619E084DAB9 && \
     add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -c -s)-cran35/" && \
     DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
